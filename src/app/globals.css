@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.75rem;
+
+  /* Base (light) — inspirada nas cores das Cataratas / marca FozGo */
+  --background: #f5fafb;
+  --foreground: #0f2438;
+
+  --card: #ffffff;
+  --card-foreground: #0f2438;
+
+  --popover: #ffffff;
+  --popover-foreground: #0f2438;
+
+  /* teal = cor de ação da marca (GO) */
+  --primary: #0e7c8b;
+  --primary-foreground: #ffffff;
+
+  --secondary: #eff6f8;
+  --secondary-foreground: #123a5b;
+
+  --muted: #eef4f6;
+  --muted-foreground: #5b7183;
+
+  --accent: #e1f5f7;
+  --accent-foreground: #0e7c8b;
+
+  --destructive: #e5484d;
+  --destructive-foreground: #ffffff;
+
+  --success: #16a34a;
+  --star: #ffb020;
+
+  --border: #e3ecef;
+  --input: #e3ecef;
+  --ring: #0ea5b7;
+
+  /* navy da marca (FOZ) */
+  --brand-navy: #123a5b;
+  --brand-teal: #0ea5b7;
+  --brand-teal-deep: #0e7c8b;
+  --brand-pin: #34c759;
+
+  /* Sidebar */
+  --sidebar: #0c2a43;
+  --sidebar-foreground: #d5e3ea;
+  --sidebar-muted: #7d97a8;
+  --sidebar-accent: #0ea5b7;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-hover: rgba(255, 255, 255, 0.06);
+}
+
+.dark {
+  --background: #0a1420;
+  --foreground: #e6eef3;
+
+  --card: #0f1f2e;
+  --card-foreground: #e6eef3;
+
+  --popover: #0f1f2e;
+  --popover-foreground: #e6eef3;
+
+  --primary: #0ea5b7;
+  --primary-foreground: #04141a;
+
+  --secondary: #16283a;
+  --secondary-foreground: #cfe0ea;
+
+  --muted: #16283a;
+  --muted-foreground: #8ba3b3;
+
+  --accent: #123a4a;
+  --accent-foreground: #7fe3ee;
+
+  --destructive: #f0575c;
+  --destructive-foreground: #1a0405;
+
+  --success: #34c759;
+  --star: #ffce5c;
+
+  --border: rgba(255, 255, 255, 0.09);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: #0ea5b7;
+
+  --sidebar: #071522;
+  --sidebar-foreground: #cddde6;
+  --sidebar-muted: #6f8a9c;
+  --sidebar-accent: #0ea5b7;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-star: var(--star);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-teal: var(--brand-teal);
+  --color-brand-teal-deep: var(--brand-teal-deep);
+  --color-brand-pin: var(--brand-pin);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-hover: var(--sidebar-hover);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar discreta */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--muted-foreground) 30%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--muted-foreground) 50%, transparent);
+  background-clip: padding-box;
+}
