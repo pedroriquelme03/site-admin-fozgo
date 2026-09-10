@@ -10,56 +10,82 @@ function admins(): string[] {
     .filter(Boolean);
 }
 
+function supabaseEnv() {
+  const url =
+    process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  const anonKey =
+    process.env.SUPABASE_ANON_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+    "";
+  return { url, anonKey };
+}
+
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
-
-  const url = process.env.SUPABASE_URL ?? "";
-  const anonKey = process.env.SUPABASE_ANON_KEY ?? "";
-
-  const supabase = createServerClient(url, anonKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet: CookieToSet[]) {
-        cookiesToSet.forEach(({ name, value }) =>
-          request.cookies.set(name, value)
-        );
-        response = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options)
-        );
-      },
-    },
-  });
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const isAdmin = !!user?.email && admins().includes(user.email.toLowerCase());
   const onLogin = request.nextUrl.pathname === "/login";
+  const { url, anonKey } = supabaseEnv();
 
-  // Não autenticado/não admin tentando acessar o painel → login
-  if (!isAdmin && !onLogin) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/login";
-    return NextResponse.redirect(redirectUrl);
+  // Sem credenciais o createServerClient/getUser quebra o Edge — redireciona
+  // para /login em vez de gerar MIDDLEWARE_INVOCATION_FAILED.
+  if (!url || !anonKey) {
+    if (!onLogin) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/login";
+      return NextResponse.redirect(redirectUrl);
+    }
+    return response;
   }
 
-  // Admin já logado tentando ver o login → dashboard
-  if (isAdmin && onLogin) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/";
-    return NextResponse.redirect(redirectUrl);
-  }
+  try {
+    const supabase = createServerClient(url, anonKey, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet: CookieToSet[]) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          response = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    });
 
-  return response;
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const isAdmin =
+      !!user?.email && admins().includes(user.email.toLowerCase());
+
+    if (!isAdmin && !onLogin) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/login";
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    if (isAdmin && onLogin) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/";
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    return response;
+  } catch {
+    if (!onLogin) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/login";
+      return NextResponse.redirect(redirectUrl);
+    }
+    return NextResponse.next({ request });
+  }
 }
 
 export const config = {
   matcher: [
-    // Tudo, exceto assets estáticos do Next e imagens
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
